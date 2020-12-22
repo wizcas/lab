@@ -1,46 +1,40 @@
-# Getting Started with Create React App
+Rxjs-Based React Form State Management
+---
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A simple demo of managing the form state and controlled inputs in React, based on Rxjs observables and data stream manipulating.
 
-## Available Scripts
+![Partial render effect](screenshot.gif)
+_Partial re-rendering_
 
-In the project directory, you can run:
+## What's the Benefit?
 
-### `yarn start`
+Rxjs provides a pub/sub pattern, and it's very powerful in manipulating the data as the data stream goes through. Such design makes a component capable of keeping an eye on only the data it cares.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+When a single property, take `foo` as an example, in the store gets updated, only the components that subscribes the `foo` will be re-rendered.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## How It Works
 
-### `yarn test`
+The provider holds a root ***store*** (an instance of `BehaviorSubject`) who takes new data and emits to all the subscribers. Each subscriber listens to a `Observable`, a fancy name of _data stream_, that can transform data as the data flows by.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+A basic data flow works like this:
 
-### `yarn build`
+1. Something submits a new value to the ***store***.
+2. The ***store*** pushes the new values to any active observables.
+3. Say, there is an observable that cares about only the `foo` property. It then gets the `foo`'s value out of the entire store object, through the `map` rxjs operator.
+4. This observer continues to check if the new `foo` value is same as the previous one passing the stream by the rxjs operator `distinctUntilChanged` (with deep compare) .
+5. If the two values are the same, the new value gets discarded. Any component that wants the `foo` value will not be re-rendered. In fact, they won't even know that there was an update to the store.
+6. If the `foo` value is new, the new value will be set into an inner React state, causing the component re-rendered with the new value.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Folders
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+`components`: a few _'Connected Components'_ who interacts with the form state store for retrieving and updating form field values.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+`state`: the core part of state management, providing a subject-based _'store'_, a provider component, and a hook `useFormField()` for interacting with a single form field within a particular conntected component.
 
-### `yarn eject`
+`example-form`: For composing the components together for the small demo.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Run the Demo
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+$ yarn && yarn start
+```
