@@ -18,6 +18,8 @@ export const FormStateProvider: React.FC<ProviderProps> = ({
   const store = useMemo(() => new BehaviorSubject<any>(initialValues), [
     initialValues,
   ]);
+  // This effect is just for debugging the store changes.
+  // It can be implemented with rxjs pipe `tap()` as well.
   useEffect(() => {
     const subscription = store.subscribe((values) =>
       console.log('store updated', values)
@@ -25,7 +27,7 @@ export const FormStateProvider: React.FC<ProviderProps> = ({
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [store]);
   return (
     <FormStateContext.Provider value={store}>
       {children}

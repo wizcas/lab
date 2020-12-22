@@ -4,7 +4,12 @@ import { FormStateProvider } from '../state';
 
 export const Form: React.FC = () => {
   return (
-    <FormStateProvider initialValues={{}}>
+    <FormStateProvider
+      initialValues={{
+        name: 'Jackie',
+        gender: 1,
+      }}
+    >
       <div>
         <ConnectedTextInput label="Name: " statePath="name" />
         <ConnectedRadioGroup

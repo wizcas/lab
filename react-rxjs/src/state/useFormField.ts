@@ -11,13 +11,14 @@ import {
 import { map, distinctUntilChanged } from 'rxjs/operators';
 import { FormStateContext } from './store';
 
-export function useFormField(
+export function useFormField<T = any>(
   statePath: string
-): [any, (newValue: any) => void] {
+): [T | undefined, (newValue: T) => void] {
   const ctx = useContext(FormStateContext);
   if (ctx == null) {
     throw new Error('must be called within the scope of a provider');
   }
+  // Creates an observer who emits when the value on `statePath` is changed
   const observer = useMemo(
     () =>
       ctx.pipe(
@@ -26,12 +27,14 @@ export function useFormField(
       ),
     [ctx, statePath]
   );
+  // Wraps the publish function for easy use
   const setValue = useCallback(
     (fieldValue: any) => {
       ctx.next(set(statePath, fieldValue, ctx.getValue()));
     },
     [ctx, statePath]
   );
+  // Ask for re-rendering by updating the inner state
   const [value, setInnerState] = useState(undefined);
   useLayoutEffect(() => {
     const subscription = observer.subscribe((v) => setInnerState(v));
