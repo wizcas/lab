@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { StateProps } from './props';
 import './common.css';
+import { useFormField } from '../state';
 
 export interface RadioGroupOption {
   label: string;
@@ -14,11 +15,13 @@ interface Props extends StateProps {
 export const ConnectedRadioGroup: React.FC<Props> = (props) => {
   const { label, options, statePath } = props;
 
-  const value = -1; // get the value from state
-
-  const onChange = useCallback(() => {
-    // submit to state
-  }, []);
+  const [value, setValue] = useFormField('gender');
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(+e.target.value);
+    },
+    [setValue]
+  );
 
   return (
     <div className="form-field">
